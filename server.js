@@ -25,24 +25,26 @@ app.post("/api/notes", async (req, res) => {
     ...req.body,
   };
 
-  const notes = await readNotesDB();
+  const notes = await readNotes();
 
   notes.push(newNote);
-  await writeNotesDB(notes);
+  await writeNotes(notes);
   res.status(201).json(newNote);
 });
 
 app.delete("/api/notes/:id", async (req, res) => {
   const id = req.params.id;
-  const notes = await readNotesDB();
+  const notes = await readNotes();
 
   const filteredNotes = notes.filter((notes) => notes.id !== id);
+
+  await writeNotes(filteredNotes);
 
   res.status(200).send("Seccessfully Deleted");
 });
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/index.hyml"));
+  res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
 app.listen(PORT, () =>
