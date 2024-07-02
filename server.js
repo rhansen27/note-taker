@@ -18,3 +18,33 @@ app.get("/", (req, res) => {
 app.get("/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
+
+app.post("/api/notes", async (req, res) => {
+  const newNote = {
+    id: uuidv4(),
+    ...req.body,
+  };
+
+  const notes = await readNotesDB();
+
+  notes.push(newNote);
+  await writeNotesDB(notes);
+  res.status(201).json(newNote);
+});
+
+app.delete("/api/notes/:id", async (req, res) => {
+  const id = req.params.id;
+  const notes = await readNotesDB();
+
+  const filteredNotes = notes.filter((notes) => notes.id !== id);
+
+  res.status(200).send("Seccessfully Deleted");
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/index.hyml"));
+});
+
+app.listen(PORT, () =>
+  console.log(`App listening at http://localhost:${PORT}`)
+);
